@@ -1,0 +1,17 @@
+# IDE
+.DS_Store
+.idea
+*.log
+tmp/
+
+# Binaries
+termbox-example
+bin/
+
+# Compiled objects
+*.fasl
+*.lx64fsl
+
+# Debug documents
+dev.md
+dev.org
