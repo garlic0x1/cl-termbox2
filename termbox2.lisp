@@ -83,8 +83,8 @@ tb_shutdown().")
   "Clears the internal back buffer using TB_DEFAULT color or the
 color/attributes set by tb_set_clear_attrs() function.")
 (defcfun ("tb_set_clear_attrs" tb-set-clear-attrs) :int
-  (fg :unsigned-int)
-  (bg :unsigned-int))
+  (fg :uint64)
+  (bg :uint64))
 (defcfun ("tb_present" tb-present) :int
   "Synchronizes the internal back buffer with the terminal by writing to tty.")
 (defcfun ("tb_invalidate") :int
@@ -111,20 +111,20 @@ Function tb_extend_cell() is a shortcut for appending 1 codepoint to
 cell->ech."
   (x :int)
   (y :int)
-  (ch :unsigned-int)
-  (fg :unsigned-int)
-  (bg :unsigned-int))
+  (ch :uint32)
+  (fg :uint64)
+  (bg :uint64))
 (defcfun ("tb_set_cell_ex" tb-set-cell-ex) :int
   (x :int)
   (y :int)
-  (ch (:pointer :unsigned-int))
-  (nch :unsigned-int)
-  (fg :unsigned-int)
-  (bg :unsigned-int))
+  (ch (:pointer :uint32))
+  (nch :uint32)
+  (fg :uint64)
+  (bg :uint64))
 (defcfun ("tb_extend_cell" tb-extend-cell) :int
   (x :int)
   (y :int)
-  (ch :unsigned-int))
+  (ch :uint32))
 
 (defcfun ("tb_peek_event" tb-peek-event*) :int
   "Wait for an event up to timeout_ms milliseconds and fill the event
@@ -152,22 +152,22 @@ tb_poll_event() / tb_peek_event() if activity is detected."
 For finer control, use tb_set_cell()."
   (x :int)
   (y :int)
-  (fg :unsigned-int)
-  (bg :unsigned-int)
+  (fg :uint64)
+  (bg :uint64)
   (str :string))
 (defcfun ("tb_print_ex" tb-print-ex) :int
   "Same as tb_print() except with out_w to determine width of printed."
   (x :int)
   (y :int)
-  (fg :unsigned-int)
-  (bg :unsigned-int)
-  (out-w :unsigned-int)
+  (fg :uint64)
+  (bg :uint64)
+  (out-w :pointer)
   (str :string))
 
 (defcfun ("tb_send" tb-send) :int
   "Send raw bytes to terminal"
   (buf :string)
-  (nbuf :unsigned-int))
+  (nbuf :uint32))
 
 (defcfun ("tb_set_func" tb-set-func) :int
   "Set custom functions. fn_type is one of TB_FUNC_* constants, fn is a
