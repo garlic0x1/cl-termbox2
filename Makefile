@@ -1,5 +1,5 @@
 LISP ?= ${shell which sbcl}
 
-example:
-	$(LISP) --eval "(asdf:make :termbox2/example)" \
+snake:
+	$(LISP) --eval "(asdf:make :termbox2/snake)" \
 		--eval "(quit)"

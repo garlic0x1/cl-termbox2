@@ -1,11 +1,12 @@
 (asdf:defsystem "termbox2"
   :author "garlic0x1"
+  :license "MIT"
   :depends-on (:cffi)
   :components ((:file "termbox2")))
 
-(asdf:defsystem "termbox2/example"
+(asdf:defsystem "termbox2/snake"
   :depends-on (:termbox2)
-  :components ((:file "example"))
+  :components ((:file "snake"))
   :build-operation "program-op"
-  :build-pathname "termbox-example"
-  :entry-point "termbox2/example::main")
+  :build-pathname "snake"
+  :entry-point "termbox2/snake::main")

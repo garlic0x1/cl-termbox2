@@ -127,16 +127,9 @@ cell->ech."
   (ch :uint32))
 
 (defcfun ("tb_peek_event" tb-peek-event*) :int
-  "Wait for an event up to timeout_ms milliseconds and fill the event
-structure with it. If no event is available within the timeout period,
-TB_ERR_NO_EVENT is returned. On a resize event, the underlying select(2)
-call may be interrupted, yielding a return code of TB_ERR_POLL.
-In this case, you may check errno via tb_last_errno(). If it's EINTR,
-you can safely ignore that and call tb_peek_event() again."
   (event :pointer)
   (timeout :int))
 (defcfun ("tb_poll_event" tb-poll-event*) :int
-  "Same as tb_peek_event except no timeout."
   (event :pointer))
 (defcfun ("tb_get_fds" tb-get-fds) :int
   "Internal termbox FDs that can be used with poll() / select(). Must call
@@ -192,11 +185,18 @@ TB_FUNC_EXTRACT_POST:
     (make-tb-event :type type :mod mod :key key :ch ch :w w :h h :x x :y y)))
 
 (defun tb-poll-event ()
+  "Same as tb_peek_event except no timeout."
   (with-foreign-object (ev '(:struct tb-event*))
     (tb-poll-event* ev)
     (translate-tb-event ev)))
 
 (defun tb-peek-event (timeout)
+  "Wait for an event up to timeout_ms milliseconds and fill the event
+structure with it. If no event is available within the timeout period,
+TB_ERR_NO_EVENT is returned. On a resize event, the underlying select(2)
+call may be interrupted, yielding a return code of TB_ERR_POLL.
+In this case, you may check errno via tb_last_errno(). If it's EINTR,
+you can safely ignore that and call tb_peek_event() again."
   (with-foreign-object (ev '(:struct tb-event*))
     (tb-peek-event* ev timeout)
     (translate-tb-event ev)))

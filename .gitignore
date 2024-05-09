@@ -6,6 +6,7 @@ tmp/
 
 # Binaries
 termbox-example
+snake
 bin/
 
 # Compiled objects
