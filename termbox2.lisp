@@ -38,6 +38,16 @@
            :tb-utf8-char-length))
 (in-package :termbox2)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                                  ;;;
+;;; Contents:                        ;;;
+;;; - Structure bindings    line 51  ;;;
+;;; - Function bindings     line 77  ;;;
+;;; - Convenience wrappers  line 211 ;;;
+;;; - Constant values       line 243 ;;;
+;;;                                  ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-foreign-library "libtermbox2.so")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -65,6 +75,10 @@
   h
   x
   y)
+
+(defun translate-tb-event (ev)
+  (with-foreign-slots ((type mod key ch w h x y) ev (:struct tb-event*))
+    (make-tb-event :type type :mod mod :key key :ch ch :w w :h h :x x :y y)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;                   ;;;
@@ -128,9 +142,10 @@ cell->ech."
   (fg :uint64)
   (bg :uint64))
 (defcfun ("tb_set_cell_ex" tb-set-cell-ex) :int
+  "Same as tb_set_cell() except with special formatting."
   (x :int)
   (y :int)
-  (ch (:pointer :uint32))
+  (ch :pointer)
   (nch :uint32)
   (fg :uint64)
   (bg :uint64))
@@ -140,9 +155,13 @@ cell->ech."
   (ch :uint32))
 
 (defcfun ("tb_peek_event" tb-peek-event*) :int
+  "Raw binding to tb_peek_event.
+Use tb-peek-event unless you know what you're doing."
   (event :pointer)
   (timeout :int))
 (defcfun ("tb_poll_event" tb-poll-event*) :int
+  "Raw binding to tb_poll_event.
+Use tb-poll-event unless you know what you're doing."
   (event :pointer))
 (defcfun ("tb_get_fds" tb-get-fds) :int
   "Internal termbox FDs that can be used with poll() / select(). Must call
@@ -171,7 +190,7 @@ For finer control, use tb_set_cell()."
   (str :string))
 
 (defcfun ("tb_send" tb-send) :int
-  "Send raw bytes to terminal"
+  "Send raw bytes to terminal."
   (buf :string)
   (nbuf :uint32))
 
@@ -185,7 +204,9 @@ TB_FUNC_EXTRACT_PRE:
 
 TB_FUNC_EXTRACT_POST:
   If specified, invoke this function AFTER termbox tries (and fails) to
-  extract any escape sequences from the input buffer."
+  extract any escape sequences from the input buffer.
+
+Use cffi:defcallback to create a func."
   (fn-type :int)
   (fn :pointer))
 
@@ -198,10 +219,6 @@ TB_FUNC_EXTRACT_POST:
 ;;; Convenience wrappers ;;;
 ;;;                      ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun translate-tb-event (ev)
-  (with-foreign-slots ((type mod key ch w h x y) ev (:struct tb-event*))
-    (make-tb-event :type type :mod mod :key key :ch ch :w w :h h :x x :y y)))
 
 (defun tb-poll-event ()
   "Same as tb_peek_event except no timeout."
@@ -385,6 +402,18 @@ Note: This is not the C function, it does not use C formatting."
   (+TB-MAGENTA+              #x0006)
   (+TB-CYAN+                 #x0007)
   (+TB-WHITE+                #x0008))
+
+;; Colors for discoverability
+(export-constants
+  (+TB-COLOR-DEFAULT+        #x0000)
+  (+TB-COLOR-BLACK+          #x0001)
+  (+TB-COLOR-RED+            #x0002)
+  (+TB-COLOR-GREEN+          #x0003)
+  (+TB-COLOR-YELLOW+         #x0004)
+  (+TB-COLOR-BLUE+           #x0005)
+  (+TB-COLOR-MAGENTA+        #x0006)
+  (+TB-COLOR-CYAN+           #x0007)
+  (+TB-COLOR-WHITE+          #x0008))
 
 ;; Event types (tb_event.type)
 (export-constants
