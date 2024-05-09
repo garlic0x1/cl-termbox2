@@ -32,12 +32,19 @@
            :tb-set-output-mode
            :tb-print
            :tb-print-ex
+           :tb-printf
            :tb-send
            :tb-set-func
            :tb-utf8-char-length))
 (in-package :termbox2)
 
 (use-foreign-library "libtermbox2.so")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                    ;;;
+;;; Structure bindings ;;;
+;;;                    ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defcstruct tb-event*
   (type :uint8)
@@ -58,6 +65,12 @@
   h
   x
   y)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                   ;;;
+;;; Function bindings ;;;
+;;;                   ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defcfun ("tb_init" tb-init) :int
   "Initializes the termbox library. This function should be called before any
@@ -180,6 +193,12 @@ TB_FUNC_EXTRACT_POST:
   "Return byte length of codepoint given first byte of UTF-8 sequence (1-6)."
   (c :char))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;                      ;;;
+;;; Convenience wrappers ;;;
+;;;                      ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun translate-tb-event (ev)
   (with-foreign-slots ((type mod key ch w h x y) ev (:struct tb-event*))
     (make-tb-event :type type :mod mod :key key :ch ch :w w :h h :x x :y y)))
@@ -200,6 +219,11 @@ you can safely ignore that and call tb_peek_event() again."
   (with-foreign-object (ev '(:struct tb-event*))
     (tb-peek-event* ev timeout)
     (translate-tb-event ev)))
+
+(defun tb-printf (x y fg bg control &rest rest)
+  "Same as tb_print() except using a Lisp format string.
+Note: This is not the C function, it does not use C formatting."
+  (tb-print x y fg bg (apply #'format (append (list nil control) rest))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;;;                 ;;;
