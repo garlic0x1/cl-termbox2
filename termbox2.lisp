@@ -91,6 +91,7 @@
 other functions. tb_init() is equivalent to tb_init_file(\"/dev/tty\"). After
 successful initialization, the library must be finalized using the
 tb_shutdown() function.")
+
 (defcfun ("tb_shutdown" tb-shutdown) :int)
 
 (defcfun ("tb_width" tb-width) :int
@@ -99,6 +100,7 @@ terminal's window size in columns). The internal buffer can be resized after
 tb_clear() or tb_present() function calls. Both dimensions have an
 unspecified negative value when called before tb_init() or after
 tb_shutdown().")
+
 (defcfun ("tb_height" tb-height) :int
   "Returns the height of the internal back buffer (which is the same as
 terminal's window size in rows). The internal buffer can be resized after
@@ -109,11 +111,14 @@ tb_shutdown().")
 (defcfun ("tb_clear" tb-clear) :int
   "Clears the internal back buffer using TB_DEFAULT color or the
 color/attributes set by tb_set_clear_attrs() function.")
+
 (defcfun ("tb_set_clear_attrs" tb-set-clear-attrs) :int
   (fg :uint64)
   (bg :uint64))
+
 (defcfun ("tb_present" tb-present) :int
   "Synchronizes the internal back buffer with the terminal by writing to tty.")
+
 (defcfun ("tb_invalidate") :int
   "Clears the internal front buffer effectively forcing a complete re-render
 of the back buffer to the tty. It is not necessary to call this under normal
@@ -123,6 +128,7 @@ circumstances.")
   "Sets the position of the cursor. Upper-left character is (0, 0)."
   (cx :int)
   (cy :int))
+
 (defcfun ("tb-hide-cursor" tb-hide-cursor) :int)
 
 (defcfun ("tb_set_cell" tb-set-cell) :int
@@ -141,6 +147,7 @@ cell->ech."
   (ch :uint32)
   (fg :uint64)
   (bg :uint64))
+
 (defcfun ("tb_set_cell_ex" tb-set-cell-ex) :int
   "Same as tb_set_cell() except with special formatting."
   (x :int)
@@ -149,6 +156,7 @@ cell->ech."
   (nch :uint32)
   (fg :uint64)
   (bg :uint64))
+
 (defcfun ("tb_extend_cell" tb-extend-cell) :int
   (x :int)
   (y :int)
@@ -159,10 +167,12 @@ cell->ech."
 Use tb-peek-event unless you know what you're doing."
   (event :pointer)
   (timeout :int))
+
 (defcfun ("tb_poll_event" tb-poll-event*) :int
   "Raw binding to tb_poll_event.
 Use tb-poll-event unless you know what you're doing."
   (event :pointer))
+
 (defcfun ("tb_get_fds" tb-get-fds) :int
   "Internal termbox FDs that can be used with poll() / select(). Must call
 tb_poll_event() / tb_peek_event() if activity is detected."
@@ -170,6 +180,7 @@ tb_poll_event() / tb_peek_event() if activity is detected."
   (resizefd (:pointer :int)))
 
 (defcfun ("tb_set_input_mode" tb-set-input-mode) :int)
+
 (defcfun ("tb_set_output_mode" tb-set-output-mode) :int)
 
 (defcfun ("tb_print" tb-print) :int
@@ -180,6 +191,7 @@ For finer control, use tb_set_cell()."
   (fg :uint64)
   (bg :uint64)
   (str :string))
+
 (defcfun ("tb_print_ex" tb-print-ex) :int
   "Same as tb_print() except with out_w to determine width of printed."
   (x :int)
