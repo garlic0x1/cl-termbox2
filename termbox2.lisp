@@ -11,6 +11,9 @@
            :tb-event-x
            :tb-event-y
            :tb-init
+           :tb-init-file
+           :tb-init-fd
+           :tb-init-rwfd
            :tb-shutdown
            :tb-width
            :tb-height
@@ -92,6 +95,19 @@ other functions. tb_init() is equivalent to tb_init_file(\"/dev/tty\"). After
 successful initialization, the library must be finalized using the
 tb_shutdown() function.")
 
+(defcfun ("tb_init_file" tb-init-file) :int
+  "tb-init with a specified TTY file."
+  (path :string))
+
+(defcfun ("tb_init_fd" tb-init-fd) :int
+  "tb-init with a specified TTY file descriptor."
+  (tty-fd :int))
+
+(defcfun ("tb_init_rwfd" tb-init-rwfd) :int
+  "tb-init with specified TTY file descriptors for reading and writing."
+  (read-fd :int)
+  (write-fd :int))
+
 (defcfun ("tb_shutdown" tb-shutdown) :int)
 
 (defcfun ("tb_width" tb-width) :int
@@ -129,7 +145,7 @@ circumstances.")
   (cx :int)
   (cy :int))
 
-(defcfun ("tb-hide-cursor" tb-hide-cursor) :int)
+(defcfun ("tb_hide_cursor" tb-hide-cursor) :int)
 
 (defcfun ("tb_set_cell" tb-set-cell) :int
   "Set cell contents in the internal back buffer at the specified position.
@@ -179,9 +195,11 @@ tb_poll_event() / tb_peek_event() if activity is detected."
   (ttyfd (:pointer :int))
   (resizefd (:pointer :int)))
 
-(defcfun ("tb_set_input_mode" tb-set-input-mode) :int)
+(defcfun ("tb_set_input_mode" tb-set-input-mode) :int
+  (mode :int))
 
-(defcfun ("tb_set_output_mode" tb-set-output-mode) :int)
+(defcfun ("tb_set_output_mode" tb-set-output-mode) :int
+  (mode :int))
 
 (defcfun ("tb_print" tb-print) :int
   "Incomplete trailing UTF-8 byte sequences are replaced with U+FFFD.
@@ -226,11 +244,34 @@ Use cffi:defcallback to create a func."
   "Return byte length of codepoint given first byte of UTF-8 sequence (1-6)."
   (c :char))
 
+(defcfun ("tb_utf8_char_to_unicode" tb-utf8-char-to-unicode) :int
+  "Convert UTF-8 null-terminated byte sequence to UTF-32 codepoint.
+
+If `c` is an empty C string, return 0. `out` is left unchanged.
+
+If a null byte is encountered in the middle of the codepoint, return a
+negative number indicating how many bytes were processed. `out` is left
+unchanged.
+
+Otherwise, return byte length of codepoint (1-6)."
+  (out :pointer)
+  (c :string))
+
+(defcfun ("tb_utf8_unicode_to_char" tb-utf8-unicode-to-char) :int
+  "Convert UTF-32 codepoint to UTF-8 null-terminated byte sequence.
+
+`out` must be char[7] or greater. Return byte length of codepoint (1-6)."
+  (out :pointer)
+  (c :string))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;                      ;;;
 ;;; Convenience wrappers ;;;
 ;;;                      ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun (setf tb-output-mode) (value)
+  (tb-set-output-mode value))
 
 (defun tb-poll-event ()
   "Same as tb_peek_event except no timeout."

@@ -37,14 +37,14 @@
     (:west (cons (1- (car cell)) (cdr cell)))
     (otherwise (error "Bad direction."))))
 
-(defun valid-cell (cell)
+(defun valid-cell (game cell)
   (and (< (car cell) (tb-width))
        (< (cdr cell) (tb-height))
        (<= 0 (car cell))
        (<= 0 (cdr cell))
        (not (find cell (snake game) :test #'equal))))
 
-(defun eat-cell (cell)
+(defun eat-cell (game cell)
   (when (find cell (goals game) :test #'equal)
     (setf (score game) (1+ (score game))
           (goals game) (remove cell (goals game) :test #'equal)))
@@ -52,8 +52,8 @@
 
 (defun move-snake (game)
   (let ((next (relative-cell (car (last (snake game))) (direction game))))
-    (if (valid-cell next)
-        (eat-cell next)
+    (if (valid-cell game next)
+        (eat-cell game next)
         (setf (exit game) t))))
 
 (defun get-input (game)
