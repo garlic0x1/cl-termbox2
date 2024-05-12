@@ -8,16 +8,18 @@ Lisp bindings to [termbox2](https://github.com/termbox/termbox2).
   (tb-print 0 0 +tb-cyan+ +tb-black+ "Hello, Termbox!")
   (tb-print 0 1 +tb-blue+ +tb-black+ "Press any key...")
   (tb-present)
-  (let ((ev (tb-poll-event)))
-    (tb-shutdown)
-    (print ev)))
+  (tb-clear)
+  (tb-printf 0 0 +tb-cyan+ +tb-black+ "~a" (tb-poll-event))
+  (tb-present)
+  (tb-peek-event 5000)
+  (tb-shutdown))
 ```
 
 See the snake demo:
 
 ```bash
 make snake
-./snake
+./snake-exe
 ```
 
 # Installation

@@ -33,6 +33,8 @@
            :tb-get-fds
            :tb-set-input-mode
            :tb-set-output-mode
+           :tb-input-mode
+           :tb-output-mode
            :tb-print
            :tb-print-ex
            :tb-printf
@@ -272,6 +274,9 @@ Otherwise, return byte length of codepoint (1-6)."
 
 (defun (setf tb-output-mode) (value)
   (tb-set-output-mode value))
+
+(defun (setf tb-input-mode) (value)
+  (tb-set-input-mode value))
 
 (defun tb-poll-event ()
   "Same as tb_peek_event except no timeout."

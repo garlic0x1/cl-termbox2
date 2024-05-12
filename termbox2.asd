@@ -8,5 +8,12 @@
   :depends-on (:termbox2)
   :components ((:file "snake"))
   :build-operation "program-op"
-  :build-pathname "snake"
+  :build-pathname "snake-exe"
   :entry-point "termbox2/snake::main")
+
+(asdf:defsystem "termbox2/example"
+  :depends-on (:termbox2)
+  :components ((:file "example"))
+  :build-operation "program-op"
+  :build-pathname "example-exe"
+  :entry-point "termbox2/example::main")
